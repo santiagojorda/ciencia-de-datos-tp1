@@ -1,0 +1,99 @@
+﻿Organización de Datos / Ciencia de Datos
+Trabajo Práctico
+
+
+Introducción        1
+Metodología        1
+TP 1: Análisis de datos        2
+Consigna        2
+Criterios de corrección        2
+TP 2: Machine learning predictivo        3
+Propuestas        4
+C-MAPSS: Desgaste de motores        4
+Descripción        4
+Dataset        4
+Twitter y desastres naturales        4
+Descripción        4
+Dataset        4
+Zales Machine        4
+Descripción        4
+Dataset        5
+Introducción 
+El objetivo de los trabajos prácticos es poder aplicar las herramientas vistas en la materia, con un formato lo más real posible. Para eso tenemos 3 propuestas de datos sobre los cuales trabajar a lo largo del cuatrimestre. El alumno está invitado a elegir la propuesta que más lo motive y/o que más interés le genere.
+
+
+Metodología
+* Cada alumno contará con un ayudante asignado al que podrá hacer consultas específicas sobre su trabajo.
+* Para cualquier duda de la solución que están pensando, pueden pedir ayuda por Slack (sin publicar su idea), y el primer ayudante disponible intentará responderles.
+* Existe un canal de consultas general en Slack para dudas que puedan ser respondidas por cualquier miembro del equipo docente o incluso por otros alumnos.
+TP 1: Análisis de datos
+Este primer trabajo práctico es opcional. Se recomienda realizarlo tanto para familiarizarse con las herramientas previo al TP 2 como para prepararse de cara al parcial.
+
+
+Consigna
+El alumno deberá elegir alguno de los 3 datasets brindados por la cátedra y realizar un análisis exploratorio sobre los datos. Se recomienda que este análisis brinde información útil acorde al objetivo del dataset y que las principales conclusiones se presenten con visus.
+
+
+
+
+La entrega consistirá de 
+1. Un notebook (.ipynb) a entregar por github: El mismo debe presentar el análisis realizado con al menos:
+   1. 5 consultas* resueltas en Pandas.
+   2. 4 consultas* resueltas en Spark.
+   3. 4 visualizaciones de datos
+   4. Un apartado con las conclusiones principales del analisis
+2. Una defensa oral.
+
+
+* Se espera que las consultas varien en su formato y estructura. ej: las consultas df.groupby([“col1”]).col2.sum() y df.groupby([“col1”]).col3.sum() se cuentan como una sola consulta
+
+
+Criterios de corrección
+En todos los casos, evaluaremos la calidad de las visualizaciones presentadas. Algunos puntos a tener en cuenta son:
+* ¿Tienen todos los ejes su rótulo?
+* ¿Tiene cada visualización un título?
+* ¿Es entendible la visualización sin tener que leer la explicación?
+* ¿El tipo de plot elegido es adecuado para lo que se quiere visualizar?
+* ¿Es una visualización interesante?
+* ¿El uso del color es adecuado?
+* ¿Hay un exceso o falta de elementos visuales en la visualización elegida?
+* ¿A qué conclusión se llega a partir de estos resultados? ¿Cual es la hipótesis que confirma/desmiente?
+* ¿La visualización es consistente con los datos?
+Y en las consultas se evaluará su eficiencia y la complejidad de las mismas.
+
+
+Por último, también se valora la profundidad del análisis realizado. Algunos de estos datasets pueden ser más complicados por eso el foco no está en los resultados, sino en la calidad del trabajo realizado.
+
+
+
+
+TP 2: Machine learning predictivo
+  
+
+
+
+
+
+
+
+
+
+Propuestas
+C-MAPSS: Desgaste de motores
+Descripción
+Esta propuesta tiene como objetivo utilizar la información de distintos sensores en los motores para calcular el tiempo de vida útil que le queda a los motores. Cuenta con distintos escenarios simulados que varían las condiciones en las que operan los mismos. Las mediciones son todas numéricas por lo que será necesario trabajar para tener variables categóricas que ayuden a profundizar el análisis
+Dataset
+El dataset se puede encontrar en Kaggle. 
+Twitter y desastres naturales
+Descripción
+Esta propuesta propone usar twitter como canal de información para detectar automáticamente cuando ocurre un desastre natural. Para esto es necesario un algoritmo que detecte si un tuit habla de un desastre natural.
+Dataset
+El dataset puede descargarse de kaggle (puede ser necesario inscribirse en la competencia)
+Zales Machine
+Descripción
+Esta propuesta es un tanto distinta. La empresa ZalesMachine según su propia descripción “construye tu motor de generación de leads B2B en tres capas”. Pueden saber más de la misma en su página web. Esta empresa de base tecnológica, fundada por un ex alumno de nuestra facultad, nos brinda para este cuatrimestre datos reales de sus trabajos pasados.
+
+
+Esta propuesta tiene datos menos curados que las anteriores pero presenta un problema real donde se aplican muchas de las herramientas de análisis de datos, NLP y data science que vemos en la materia. Es una oportunidad para aquellos que quieran intentar aplicar en un entorno real lo visto en la materia como lo harían en su carrera profesional.
+Dataset
+Dada la naturaleza sensible de los datos se debe firmar un acuerdo aceptando el correcto uso de los mismos antes de que podamos compartirles los datos
