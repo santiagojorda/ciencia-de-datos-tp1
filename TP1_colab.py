@@ -22,18 +22,18 @@
 # %% [markdown]
 # [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/santiagojorda/ciencia-de-datos-tp1/blob/entrega-tp1/TP1_colab.ipynb)
 #
-# > **Instrucciones para Google Colab:** Si ejecutas este notebook en Google Colab, ejecuta la siguiente celda para clonar el repositorio con los datasets e instalar las dependencias requeridas (incluyendo PySpark).
+# > **Configuracion para Google Colab:** Si ejecutas este notebook en Google Colab, ejecuta la siguiente celda para clonar automaticamente el repositorio con los datasets e instalar las dependencias requeridas (incluyendo PySpark).
 
 # %%
 import sys
 import os
 
-# Verificacion del entorno Google Colab
+# Verificacion y preparacion del entorno en Google Colab
 IN_COLAB = 'google.colab' in sys.modules
 
 if IN_COLAB:
     print("Ejecutando en Google Colab: configurando repositorio y dependencias...")
-    # Si no existe la carpeta data, clonamos el repositorio
+    # Si no existe la carpeta data, clonamos el repositorio publico
     if not os.path.exists('data'):
         !git clone -b entrega-tp1 https://github.com/santiagojorda/ciencia-de-datos-tp1.git
         %cd ciencia-de-datos-tp1
