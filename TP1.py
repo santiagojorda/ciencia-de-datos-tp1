@@ -410,11 +410,7 @@ plt.show()
 # Para sacarme la duda lo encaro al reves. Agarro los 15 sensores dinamicos, calculo la correlacion de cada uno contra el rul usando todas las filas de train, y los ordeno de mayor a menor en valor absoluto, para ver si los datos respaldan lo que venia haciendo.
 
 # %%
-correlaciones_dict = {}
-for sensor in sensores_dinamicos:
-    correlaciones_dict[sensor] = df[sensor].corr(df['rul'])
-
-correlaciones_rul = pd.Series(correlaciones_dict)
+correlaciones_rul = df[sensores_dinamicos].corrwith(df['rul'])
 
 correlaciones_abs = correlaciones_rul.abs()
 orden = correlaciones_abs.sort_values(ascending=False).index
