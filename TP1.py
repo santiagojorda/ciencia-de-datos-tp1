@@ -18,6 +18,22 @@
 # **Materia:** Organizacion de Datos / Ciencia de Datos (FIUBA)  
 # **Dataset:** NASA Turbofan Engine Degradation Simulation (C-MAPSS)  
 # ---
+#
+# [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/santiagojorda/ciencia-de-datos-tp1/blob/entrega-tp1/TP1.ipynb)
+#
+# > **Para correrlo en Google Colab:** ejecutar la celda de abajo, que clona el repositorio (para tener la carpeta `data/`) e instala Java 17 y PySpark.
+
+# %%
+import os
+import sys
+
+# Solo en Colab: datos del repo, Java 17 (Spark 4 lo necesita) y PySpark
+if 'google.colab' in sys.modules and not os.path.exists('data'):
+    # !git clone -q -b entrega-tp1 https://github.com/santiagojorda/ciencia-de-datos-tp1.git
+    # %cd -q ciencia-de-datos-tp1
+    # !apt-get update -qq > /dev/null && apt-get install -y -qq openjdk-17-jdk-headless > /dev/null 2>&1
+    os.environ['JAVA_HOME'] = '/usr/lib/jvm/java-17-openjdk-amd64'
+    # !pip install -q pyspark
 
 # %% [markdown]
 # ## Motivacion y seleccion del dataset
@@ -504,20 +520,6 @@ print(f"Correlacion entre sensor_4 al inicio y la vida util: {correlacion_inicio
 # Levanto la sesion en modo local usando todos los nucleos disponibles.
 
 # %%
-import os
-import sys
-
-# Spark necesita una JVM: verificamos JAVA_HOME o usamos jdk4py si esta disponible
-if 'JAVA_HOME' not in os.environ:
-    try:
-        import jdk4py
-        os.environ['JAVA_HOME'] = str(jdk4py.JAVA_HOME)
-    except ImportError:
-        pass
-
-os.environ['PYSPARK_PYTHON'] = sys.executable
-os.environ['PYSPARK_DRIVER_PYTHON'] = sys.executable
-
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, IntegerType, DoubleType
 
