@@ -182,10 +182,9 @@ columnas_constantes = desvios[desvios < UMBRAL_CONSTANTE].index.tolist()
 
 print(f"\nColumnas constantes: {columnas_constantes}")
 
-sensores_constantes = []
-for columna in columnas_constantes:
-    if columna.startswith('sensor'):
-        sensores_constantes.append(columna)
+es_constante = desvios < UMBRAL_CONSTANTE
+es_sensor = desvios.index.str.startswith('sensor')
+sensores_constantes = desvios.index[es_constante & es_sensor].tolist()
 
 print(f"Cantidad de sensores constantes: {len(sensores_constantes)} de {CANTIDAD_SENSORES}")
 
