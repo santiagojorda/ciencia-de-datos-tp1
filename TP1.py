@@ -818,10 +818,10 @@ leyenda = [
     plt.Rectangle((0, 0), 1, 1, color=COLOR_SANA, label='Se mantiene estable (<= 2x)'),
     plt.Rectangle((0, 0), 1, 1, color=COLOR_CRITICA, label='Se dispara (> 2x)')
 ]
-fig.legend(handles=leyenda, loc='upper center', ncol=2, bbox_to_anchor=(0.5, 1.08))
-fig.suptitle('Relacion de dispersion (fase critica / fase sana) de cada sensor clave, en los 4 escenarios', fontsize=13, y=1.15)
+fig.suptitle('Relacion de dispersion (fase critica / fase sana) de cada sensor clave, en los 4 escenarios', fontsize=13)
+fig.legend(handles=leyenda, loc='upper center', ncol=2, bbox_to_anchor=(0.5, 0.95))
 
-plt.tight_layout()
+plt.tight_layout(rect=(0, 0, 1, 0.93))
 plt.show()
 
 # %% [markdown]
