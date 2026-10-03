@@ -554,80 +554,56 @@ print(f"Spark {spark.version} levantado en modo local con SparkContext: {sc}")
 # Para la vida media de los motores calculamos el promedio de la vida útil de cada motor individual (`ciclo_max`), asegurando que coincida exactamente con la métrica calculada en Pandas (206.3 ciclos en FD001) y evitando el sesgo de promediar sobre el total de vuelos/filas.
 
 # %%
-columnas_sensores_spark = [f'sensor_{i}' for i in range(1, CANTIDAD_SENSORES + 1)]
+from pyspark.sql.types import StructType, StructField, IntegerType, DoubleType
+
+CANTIDAD_SENSORES = 21
+columnas_sensores = [f'sensor_{i}' for i in range(1, CANTIDAD_SENSORES + 1)]
 
 campos = [StructField('unit_id', IntegerType()), StructField('cycle', IntegerType())]
-for columna in ['setting_1', 'setting_2', 'setting_3'] + columnas_sensores_spark:
-    campos.append(StructField(columna, DoubleType()))
+campos += [StructField(col, DoubleType()) for col in ['setting_1', 'setting_2', 'setting_3'] + columnas_sensores]
 esquema = StructType(campos)
 
 SUBDATASETS = ['FD001', 'FD002', 'FD003', 'FD004']
 
-# Lectura con DataFrame unicamente para la ingesta y conversion inmediata a RDD
+# 1. Carga e insercion de 'dataset' usando r.asDict() directamente
 rdds = []
 for nombre in SUBDATASETS:
     df_raw = spark.read.option('sep', ' ').schema(esquema).csv(f'data/train_{nombre}.txt')
-    # A partir de aca todo el procesamiento se realiza exclusivamente con la API de RDDs
-    rdd_parte = df_raw.rdd.map(lambda r, ds=nombre: {
-        'dataset': ds,
-        'unit_id': r['unit_id'],
-        'cycle': r['cycle'],
-        'setting_1': r['setting_1'],
-        'setting_2': r['setting_2'],
-        'setting_3': r['setting_3'],
-        **{f'sensor_{i}': r[f'sensor_{i}'] for i in range(1, CANTIDAD_SENSORES + 1)}
-    })
-    rdds.append(rdd_parte)
+    rdds.append(df_raw.rdd.map(lambda r, ds=nombre: {'dataset': ds, **r.asDict()}))
 
 rdd_base = sc.union(rdds).cache()
 
-# 1. Calculo de ciclo maximo por motor (dataset, unit_id) con RDD
-# Clave: (dataset, unit_id), Valor: cycle
+# 2. Ciclos maximos por motor: ((dataset, unit_id), max_cycle)
 ciclos_max_rdd = (rdd_base
                   .map(lambda r: ((r['dataset'], r['unit_id']), r['cycle']))
                   .reduceByKey(max))
 
-# 2. Resumen de carga: filas, motores y vida media calculados integramente con RDD
-# a) Filas por dataset
+# 3. Resumen agrupado por dataset
+# Filas por dataset
 filas_por_ds = rdd_base.map(lambda r: (r['dataset'], 1)).reduceByKey(lambda a, b: a + b)
 
-# b) Motores y suma de vida util por dataset (1 entrada por motor en ciclos_max_rdd)
-# Clave: dataset, Valor: (1 motor, ciclo_maximo)
+# Motores y suma de ciclos: (dataset, (cant_motores, suma_ciclos))
 stats_motores = (ciclos_max_rdd
-                 .map(lambda item: (item[0][0], (1, item[1])))
+                 .map(lambda x: (x[0][0], (1, x[1])))
                  .reduceByKey(lambda a, b: (a[0] + b[0], a[1] + b[1])))
 
-# c) Join de estadisticas y calculo de vida media real (promedio por motor)
-resumen_carga = (filas_por_ds
-                 .join(stats_motores)
-                 .map(lambda item: (
-                     item[0],
-                     item[1][0],
-                     item[1][1][0],
-                     round(item[1][1][1] / item[1][1][0], 1)
-                 ))
+# Join, orden y collect con RDD; Pandas solo para mostrar el resultado ya calculado
+resumen_carga = (filas_por_ds.join(stats_motores)
+                 .map(lambda x: (x[0], x[1][0], x[1][1][0], round(x[1][1][1] / x[1][1][0], 1)))
                  .sortBy(lambda x: x[0])
                  .collect())
 
-# Presentacion en formato tabla
-print(f"+{'-'*9}+{'-'*7}+{'-'*9}+{'-'*19}+")
-print(f"|{'dataset':^9}|{'filas':^7}|{'motores':^9}|{'vida_media_ciclos':^19}|")
-print(f"+{'-'*9}+{'-'*7}+{'-'*9}+{'-'*19}+")
-for ds, f, m, vm in resumen_carga:
-    print(f"|{ds:^9}|{f:^7}|{m:^9}|{vm:^19.1f}|")
-print(f"+{'-'*9}+{'-'*7}+{'-'*9}+{'-'*19}+")
-print(f"\nFilas totales cargadas: {rdd_base.count():,}")
+print(pd.DataFrame(resumen_carga, columns=['dataset', 'filas', 'motores', 'vida_media_ciclos']).to_string(index=False))
+print(f"Filas totales cargadas: {rdd_base.count():,}")
 
-# 3. Asignacion del RUL a cada registro en el RDD usando broadcast de ciclos_max
-bc_ciclos_max = sc.broadcast(ciclos_max_rdd.collectAsMap())
+# 4. Asignacion de RUL con Broadcast
+bc_max = sc.broadcast(ciclos_max_rdd.collectAsMap())
 
-def asignar_rul(r):
-    reg = dict(r)
-    max_c = bc_ciclos_max.value[(r['dataset'], r['unit_id'])]
-    reg['rul'] = max_c - r['cycle']
+def agregar_rul(reg):
+    reg['rul'] = bc_max.value[(reg['dataset'], reg['unit_id'])] - reg['cycle']
     return reg
 
-rdd = rdd_base.map(asignar_rul).cache()
+rdd = rdd_base.map(agregar_rul).cache()
 
 # %% [markdown]
 # ### 4.1 Consulta 1: el salto de dispersion de sensor_9 aparece tambien en los otros escenarios?
