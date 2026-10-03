@@ -523,11 +523,21 @@ print(f"Correlacion entre sensor_4 al inicio y la vida util: {correlacion_inicio
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, IntegerType, DoubleType
 
+# Configuro log4j antes de levantar Spark para que no muestre los WARN de arranque
+with open('/tmp/log4j2.properties', 'w') as archivo:
+    archivo.write('appender.consola.type = Console\n'
+                  'appender.consola.name = consola\n'
+                  'rootLogger.level = error\n'
+                  'rootLogger.appenderRef.consola.ref = consola\n'
+                  'logger.pyspark.name = org.apache.spark.api.python.PythonGatewayServer\n'
+                  'logger.pyspark.level = error\n')
+
 spark = (SparkSession.builder
          .appName('TP1_CMAPSS')
          .master('local[*]')
          .config('spark.sql.shuffle.partitions', '8')
          .config('spark.ui.showConsoleProgress', 'false')
+         .config('spark.driver.extraJavaOptions', '-Dlog4j2.configurationFile=/tmp/log4j2.properties')
          .getOrCreate())
 
 sc = spark.sparkContext
